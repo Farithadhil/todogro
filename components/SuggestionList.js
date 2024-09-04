@@ -13,7 +13,7 @@ export default function SuggestionList({ onSelect }) { // Receive onSelect prop
     // Define your default suggestions with the current date
     const defaultSuggestions = ['Shopping', 'Grocery', currentDate]; 
 
-
+    const [listIds, setListIds] = useState([]); // Move this line above the useEffect
     useEffect(() => {
         const fetchSuggestions = async () => {
             if (user) {
