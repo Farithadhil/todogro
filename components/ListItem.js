@@ -17,7 +17,7 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
             setPrice(item.price || 0);
             setCategory(item.category || '');
         }
-    }, []); 
+    }, [item]); 
 
     if (!item) {
         return null; 
@@ -54,23 +54,20 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
 
     const handleToggleComplete = async () => {
         const listRef = doc(db, 'lists', listId);
-
-        // Find the index of the item to update using its ID
+      
         const itemIndex = list.items.findIndex(i => i.id === item.id); 
-
+      
         if (itemIndex !== -1) {
-            // Update the item directly in the array
-            const updatedItems = [...list.items];
-            updatedItems[itemIndex] = { ...item, completed: !item.completed };
-
-            await updateDoc(listRef, {
-                items: updatedItems
-            });
+          const updatedItems = [...list.items];
+          updatedItems[itemIndex].completed = !updatedItems[itemIndex].completed; 
+      
+          await updateDoc(listRef, {
+            items: updatedItems
+          });
         } else {
-            console.error('Item not found in the list');
-            // Handle the error gracefully 
+          console.error('Item not found in the list');
         }
-    };
+      };
 
     if (editing) {
         return (
