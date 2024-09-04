@@ -1,8 +1,10 @@
 // components/GroceryList.js
 import { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
-import { collection, query, where, onSnapshot, doc, updateDoc, arrayUnion,arrayRemove, 
-  deleteDoc } from 'firebase/firestore';
+import { 
+  collection, query, where, 
+  doc, getDoc, updateDoc, arrayUnion, arrayRemove, deleteDoc 
+} from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import ListItem from './ListItem';
 import { jsPDF } from "jspdf";
@@ -52,16 +54,25 @@ export default function GroceryList({ listId, onDelete }) {
 
   useEffect(() => {
     if (user && listId) {
-      const unsubscribe = onSnapshot(doc(db, 'lists', listId), (doc) => {
-        setList({ id: doc.id, ...doc.data() });
-      });
+      // Fetch list data initially using getDoc
+      const fetchListData = async () => {
+          try {
+              const docRef = doc(db, 'lists', listId);
+              const docSnap = await getDoc(docRef);
+              if (docSnap.exists()) {
+                  setList({ id: docSnap.id, ...docSnap.data() });
+                  setNewListName(docSnap.data().name || ''); // Update newListName here
+              } else {
+                  console.log("No such document!");
+              }
+          } catch (error) {
+              console.error("Error fetching list data:", error);
+          }
+      };
 
-      // Update newListName whenever list changes
-      setNewListName(list ? list.name : ''); 
-
-      return () => unsubscribe();
-    }
-  }, [user, listId, list]);
+      fetchListData();
+  }
+}, [user, listId]);
 
   const [editingListName, setEditingListName] = useState(false);
   // Use optional chaining or a conditional check to initialize newListName

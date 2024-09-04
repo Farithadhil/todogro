@@ -15,23 +15,24 @@ export default function SuggestionList({ onSelect }) { // Receive onSelect prop
 
 
     useEffect(() => {
-      const fetchSuggestions = async () => {
-          if (user) {
-              const q = query(collection(db, 'lists'), where('userId', '==', user.uid)); 
-              const querySnapshot = await getDocs(q);
-              const suggestionsData = querySnapshot.docs.map(doc => doc.data().name);
+        const fetchSuggestions = async () => {
+            if (user) {
+                const q = query(collection(db, 'lists'), where('userId', '==', user.uid));
+                const querySnapshot = await getDocs(q);
 
-              // Combine default and fetched suggestions, remove duplicates
-              const allSuggestions = [...new Set([...defaultSuggestions, ...suggestionsData])]; 
-              setSuggestions(allSuggestions); 
-          } else {
-              // If no user is logged in, show only default suggestions
-              setSuggestions(defaultSuggestions); 
-          }
-      };
+                const suggestionsData = querySnapshot.docs.map(doc => doc.data().name);
+                const fetchedListIds = querySnapshot.docs.map(doc => doc.id); 
 
-      fetchSuggestions();
-  }, [user]); 
+                const allSuggestions = [...new Set([...defaultSuggestions, ...suggestionsData])];
+                setSuggestions(allSuggestions);
+                setListIds(fetchedListIds); 
+            } else {
+                setSuggestions(defaultSuggestions);
+            }
+        };
+
+        fetchSuggestions();
+    }, [user, listIds]); // Use listIds as a dependency
 
     return (
       <div className="mt-2">
