@@ -26,9 +26,8 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
     const handleUpdate = async () => {
         const listRef = doc(db, 'lists', listId);
 
-         // Find the index of the item to update using a unique identifier (e.g., 'id')
-    const itemIndex = list.items.findIndex(i => i.id === item.id); 
-
+        // Find the index of the item to update using a unique identifier (e.g., 'id')
+        const itemIndex = list.items.findIndex(i => i.id === item.id); 
 
         if (itemIndex !== -1) {
             // Update the item directly in the array using its index
@@ -55,12 +54,22 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
 
     const handleToggleComplete = async () => {
         const listRef = doc(db, 'lists', listId);
-        await updateDoc(listRef, {
-            items: arrayRemove(item)
-        });
-        await updateDoc(listRef, {
-            items: arrayUnion({ ...item, completed: !item.completed })
-        });
+
+        // Find the index of the item to update using its ID
+        const itemIndex = list.items.findIndex(i => i.id === item.id); 
+
+        if (itemIndex !== -1) {
+            // Update the item directly in the array
+            const updatedItems = [...list.items];
+            updatedItems[itemIndex] = { ...item, completed: !item.completed };
+
+            await updateDoc(listRef, {
+                items: updatedItems
+            });
+        } else {
+            console.error('Item not found in the list');
+            // Handle the error gracefully 
+        }
     };
 
     if (editing) {
@@ -113,7 +122,7 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
                 />
             </td>
             <td className="border p-2">{name}</td>
-            <td className="border p-2 text-center">{quantity}</td>
+            <td className="border p-2 text-center">{quantity} Qty</td> {/* Add "Qty" */}
             {showPrice && <td className="border p-2 text-center">₹{price}</td>}
             <td className="border p-2">
                 <span aria-label={item.category} role="img"> 

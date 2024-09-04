@@ -39,18 +39,28 @@ export default function Dashboard() {
     if (newListName.trim() === '') return;
 
     try {
-      await addDoc(collection(db, 'lists'), {
-        name: newListName,
-        userId: user.uid,
-        items: []
-      });
-      setNewListName('');
-      fetchLists(); // Refresh the list of grocery lists
-    } catch (error) {
-      console.error("Error creating new list:", error);
-    }
-  };
+      const newListData = {
+          name: newListName,
+          userId: user.uid,
+          items: []
+      };
 
+      // Optimistic UI update: Add the new list to the state immediately
+      setLists([...lists, { id: 'temp_id', ...newListData }]); 
+
+      const docRef = await addDoc(collection(db, 'lists'), newListData);
+
+      // Update the temp_id with the actual ID from Firestore
+      setLists(lists.map(list => 
+          list.id === 'temp_id' ? { id: docRef.id, ...list } : list
+      ));
+
+      setNewListName('');
+  } catch (error) {
+      console.error("Error creating new list:", error);
+      // Handle the error gracefully, potentially remove the optimistically added list from state
+  }
+};
   if (authLoading || loading) {
     return <div>Loading...</div>;
   }
