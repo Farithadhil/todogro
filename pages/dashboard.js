@@ -45,27 +45,21 @@ export default function Dashboard() {
         items: []
       };
   
-      // Generate a temporary ID (you can use a library like uuid for this)
-      const tempId = 'temp_' + Date.now(); 
+      const tempId = 'temp_' + Date.now();
   
-      // Optimistic UI update: Add the new list to the state immediately
       setLists([...lists, { id: tempId, ...newListData }]); 
   
       const docRef = await addDoc(collection(db, 'lists'), newListData);
   
-      // Update the temp_id with the actual ID from Firestore
       setLists(lists.map(list => 
         list.id === tempId ? { id: docRef.id, ...list } : list
       ));
   
       setNewListName('');
+      fetchLists(); // Refresh the list of grocery lists after the Firestore update is complete
     } catch (error) {
       console.error("Error creating new list:", error);
-  
-      // Remove the optimistically added list if there's an error
       setLists(lists.filter(list => list.id !== tempId)); 
-  
-      // Optionally, display an error message to the user
       alert('Error creating list. Please try again.');
     }
   };
