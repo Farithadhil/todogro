@@ -37,30 +37,39 @@ export default function Dashboard() {
   const createNewList = async (e) => {
     e.preventDefault();
     if (newListName.trim() === '') return;
-
+  
     try {
       const newListData = {
-          name: newListName,
-          userId: user.uid,
-          items: []
+        name: newListName,
+        userId: user.uid,
+        items: []
       };
-
+  
+      // Generate a temporary ID (you can use a library like uuid for this)
+      const tempId = 'temp_' + Date.now(); 
+  
       // Optimistic UI update: Add the new list to the state immediately
-      setLists([...lists, { id: 'temp_id', ...newListData }]); 
-
+      setLists([...lists, { id: tempId, ...newListData }]); 
+  
       const docRef = await addDoc(collection(db, 'lists'), newListData);
-
+  
       // Update the temp_id with the actual ID from Firestore
       setLists(lists.map(list => 
-          list.id === 'temp_id' ? { id: docRef.id, ...list } : list
+        list.id === tempId ? { id: docRef.id, ...list } : list
       ));
-
+  
       setNewListName('');
-  } catch (error) {
+    } catch (error) {
       console.error("Error creating new list:", error);
-      // Handle the error gracefully, potentially remove the optimistically added list from state
-  }
-};
+  
+      // Remove the optimistically added list if there's an error
+      setLists(lists.filter(list => list.id !== tempId)); 
+  
+      // Optionally, display an error message to the user
+      alert('Error creating list. Please try again.');
+    }
+  };
+  
   if (authLoading || loading) {
     return <div>Loading...</div>;
   }
