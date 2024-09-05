@@ -51,18 +51,21 @@ export default function GroceryList({ listId, onDelete }) {
 
     useEffect(() => {
       if (user && listId) {
-        const unsubscribe = onSnapshot(doc(db, 'lists', listId), (doc) => {
+        const docRef = doc(db, 'lists', listId);
+    
+        const unsubscribe = onSnapshot(docRef, { includeMetadataChanges: true }, (doc) => {
           if (doc.exists()) {
             setList({ id: doc.id, ...doc.data() });
             setNewListName(doc.data().name || '');
           } else {
             console.log("No such document!");
+            // Handle list deletion (e.g., navigate back to dashboard)
           }
         });
     
-        return () => unsubscribe(); // Make sure to unsubscribe when the component unmounts
+        return () => unsubscribe();
       }
-    }, [user, listId]); 
+    }, [user, listId]);
 
     const handleEditListName = () => {
         setEditingListName(true);
