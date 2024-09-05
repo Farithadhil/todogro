@@ -26,21 +26,22 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
     const handleUpdate = async () => {
         const listRef = doc(db, 'lists', listId);
 
+        // Find the index of the item to update using its ID
         const itemIndex = list.items.findIndex(i => i.id === item.id);
 
         if (itemIndex !== -1) {
-          const updatedItems = [...list.items];
-          updatedItems[itemIndex] = { ...item, name, quantity, price, category };
-    
-          await updateDoc(listRef, {
-            items: updatedItems
-          });
+            const updatedItems = [...list.items];
+            updatedItems[itemIndex] = { ...item, name, quantity, price, category };
+
+            await updateDoc(listRef, {
+                items: updatedItems
+            });
         } else {
-          console.error('Item not found in the list');
+            console.error('Item not found in the list');
         }
-    
+
         setEditing(false);
-      };
+    };
 
     const handleDelete = async () => {
         const listRef = doc(db, 'lists', listId);
@@ -50,22 +51,22 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
     };
 
     
-  const handleToggleComplete = async () => {
-    const listRef = doc(db, 'lists', listId);
+    const handleToggleComplete = async () => {
+        const listRef = doc(db, 'lists', listId);
 
-    const itemIndex = list.items.findIndex(i => i.id === item.id);
+        const itemIndex = list.items.findIndex(i => i.id === item.id);
 
-    if (itemIndex !== -1) {
-      const updatedItems = [...list.items];
-      updatedItems[itemIndex].completed = !updatedItems[itemIndex].completed;
+        if (itemIndex !== -1) {
+            const updatedItems = [...list.items];
+            updatedItems[itemIndex].completed = !updatedItems[itemIndex].completed;
 
-      await updateDoc(listRef, {
-        items: updatedItems
-      });
-    } else {
-      console.error('Item not found in the list');
-    }
-  };
+            await updateDoc(listRef, {
+                items: updatedItems
+            });
+        } else {
+            console.error('Item not found in the list');
+        }
+    };
 
     if (editing) {
         return (

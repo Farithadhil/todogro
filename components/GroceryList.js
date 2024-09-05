@@ -11,6 +11,7 @@ import "jspdf-autotable";
 import notoSansTamilFont from '/public/fonts/NotoSansTamil-Regular.ttf';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faShareAlt, faCopy, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
 const categories = [
     { name: 'Others', icon: '🤷‍♀️', alt: 'Others' },
@@ -86,15 +87,15 @@ export default function GroceryList({ listId, onDelete }) {
     };
 
     const addItem = async (e) => {
-        e.preventDefault();
-        if (newItem.name.trim() === '') return;
+      e.preventDefault();
+      if (newItem.name.trim() === '') return;
 
-        const listRef = doc(db, 'lists', listId);
-        await updateDoc(listRef, {
-            items: arrayUnion({ ...newItem, completed: false })
-        });
-        setNewItem({ name: '', quantity: 1, price: 0, category: '' });
-    };
+      const listRef = doc(db, 'lists', listId);
+      await updateDoc(listRef, {
+          items: arrayUnion({ ...newItem, completed: false, id: uuidv4() }) // Add unique ID
+      });
+      setNewItem({ name: '', quantity: 1, price: 0, category: '' });
+  };
 
     const calculateTotal = () => {
         if (!list || !list.items) return 0;
