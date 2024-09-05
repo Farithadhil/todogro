@@ -26,24 +26,21 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
     const handleUpdate = async () => {
         const listRef = doc(db, 'lists', listId);
 
-        // Find the index of the item to update using a unique identifier (e.g., 'id')
-        const itemIndex = list.items.findIndex(i => i.id === item.id); 
+        const itemIndex = list.items.findIndex(i => i.id === item.id);
 
         if (itemIndex !== -1) {
-            // Update the item directly in the array using its index
-            const updatedItems = [...list.items];
-            updatedItems[itemIndex] = { ...item, name, quantity, price, category };
-
-            await updateDoc(listRef, {
-                items: updatedItems
-            });
+          const updatedItems = [...list.items];
+          updatedItems[itemIndex] = { ...item, name, quantity, price, category };
+    
+          await updateDoc(listRef, {
+            items: updatedItems
+          });
         } else {
-            console.error('Item not found in the list');
-            // Handle the error gracefully (e.g., show an error message to the user)
+          console.error('Item not found in the list');
         }
-
+    
         setEditing(false);
-    };
+      };
 
     const handleDelete = async () => {
         const listRef = doc(db, 'lists', listId);
@@ -52,22 +49,23 @@ export default function ListItem({ item, listId, showPrice, categories, list }) 
         });
     };
 
-    const handleToggleComplete = async () => {
-        const listRef = doc(db, 'lists', listId);
-      
-        const itemIndex = list.items.findIndex(i => i.id === item.id); 
-      
-        if (itemIndex !== -1) {
-          const updatedItems = [...list.items];
-          updatedItems[itemIndex].completed = !updatedItems[itemIndex].completed; 
-      
-          await updateDoc(listRef, {
-            items: updatedItems
-          });
-        } else {
-          console.error('Item not found in the list');
-        }
-      };
+    
+  const handleToggleComplete = async () => {
+    const listRef = doc(db, 'lists', listId);
+
+    const itemIndex = list.items.findIndex(i => i.id === item.id);
+
+    if (itemIndex !== -1) {
+      const updatedItems = [...list.items];
+      updatedItems[itemIndex].completed = !updatedItems[itemIndex].completed;
+
+      await updateDoc(listRef, {
+        items: updatedItems
+      });
+    } else {
+      console.error('Item not found in the list');
+    }
+  };
 
     if (editing) {
         return (
