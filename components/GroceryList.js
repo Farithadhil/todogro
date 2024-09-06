@@ -12,33 +12,8 @@ import notoSansTamilFont from '/public/fonts/NotoSansTamil-Regular.ttf';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faShareAlt, faCopy, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
+import { categories } from './categories';
 
-const categories = [
-    { name: 'Others', icon: '🤷‍♀️', alt: 'Others' },
-    { name: 'Fruits', icon: '🍎', alt: 'Fruits' },
-    { name: 'Vegetables', icon: '🥦', alt: 'Vegetables' },
-    { name: 'Dairy', icon: '🥛', alt: 'Dairy' },
-    { name: 'Meat', icon: '🥩', alt: 'Meat' },
-    { name: 'Seafood', icon: '🐟', alt: 'Seafood' },
-    { name: 'Bakery', icon: '🥐', alt: 'Bakery' },
-    { name: 'Pantry', icon: '🥫', alt: 'Pantry' },
-    { name: 'Beverages', icon: '🍹', alt: 'Beverages' },
-    { name: 'Frozen', icon: '🧊', alt: 'Frozen' },
-    { name: 'Breakfast', icon: '🥞', alt: 'Breakfast' },
-    { name: 'Wellness', icon: '💊', alt: 'Wellness' },
-    { name: 'Baby', icon: '👶', alt: 'Baby' },
-    { name: 'Pets', icon: '🐶', alt: 'Pets' },
-    { name: 'Household', icon: '🧹', alt: 'Household' },
-    { name: 'Personal', icon: '🧴', alt: 'Personal' },
-    { name: 'International', icon: '🌎', alt: 'International' },
-    { name: 'Gluten-Free', icon: '🌾🚫', alt: 'Gluten-Free' },
-    { name: 'Baking', icon: '🧁', alt: 'Baking' },
-    { name: 'Sweets', icon: '🍭', alt: 'Sweets' },
-    { name: 'Canned', icon: '🥫', alt: 'Canned' },
-    { name: 'Condiments', icon: '🧂', alt: 'Condiments' },
-    { name: 'Prepared', icon: '🥘', alt: 'Prepared' },
-    { name: 'Seasonal', icon: '🍂', alt: 'Seasonal' }
-];
 
 export default function GroceryList({ listId, onDelete }) {
     const [list, setList] = useState(null);

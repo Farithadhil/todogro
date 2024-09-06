@@ -13,6 +13,15 @@ export default function Dashboard() {
   const [newListName, setNewListName] = useState('');
   const router = useRouter();
 
+  // Reset the state when user logs out to prevent UI glitches
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setLists([]);
+      setNewListName('');
+    }
+  }, [authLoading, user]);
+
+  // Fetch lists after login
   useEffect(() => {
     if (!authLoading && user) {
       fetchLists();
@@ -22,16 +31,16 @@ export default function Dashboard() {
   }, [user, authLoading, router]);
 
   const fetchLists = async () => {
+    setLoading(true); // Ensure loading state is set before fetching data
     try {
       const q = query(collection(db, 'lists'), where('userId', '==', user.uid));
       const querySnapshot = await getDocs(q);
       const listsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLists(listsData);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching lists:", error);
-      setLoading(false);
     }
+    setLoading(false); // Turn off loading once data is fetched
   };
 
   const createNewList = async (e) => {
@@ -46,7 +55,6 @@ export default function Dashboard() {
       };
   
       const tempId = 'temp_' + Date.now();
-  
       setLists([...lists, { id: tempId, ...newListData }]); 
   
       const docRef = await addDoc(collection(db, 'lists'), newListData);
@@ -56,7 +64,7 @@ export default function Dashboard() {
       ));
   
       setNewListName('');
-      fetchLists(); // Refresh the list of grocery lists after the Firestore update is complete
+      fetchLists(); // Refresh the list after creating a new one
     } catch (error) {
       console.error("Error creating new list:", error);
       setLists(lists.filter(list => list.id !== tempId)); 
@@ -85,21 +93,21 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <p className="mb-4">Welcome, {user.displayName}!</p>
 
-      <form onSubmit={createNewList} className="mb-4 flex items-baseline"> {/* Add items-center */}
-                <div className="flex-grow mr-2"> 
-                    <input
-                        type="text"
-                        value={newListName}
-                        onChange={(e) => setNewListName(e.target.value)}
-                        placeholder="New list name"
-                        className="border p-2 rounded w-full" 
-                    />
-                    <SuggestionList onSelect={handleSuggestionClick} className="mt-1 m-0 p-0" />
-                </div>
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded align-self-start !important"> 
-    Create New List
-</button>
-            </form>
+      <form onSubmit={createNewList} className="mb-4 flex items-baseline">
+        <div className="flex-grow mr-2"> 
+          <input
+            type="text"
+            value={newListName}
+            onChange={(e) => setNewListName(e.target.value)}
+            placeholder="New list name"
+            className="border p-2 rounded w-full" 
+          />
+          <SuggestionList onSelect={handleSuggestionClick} className="mt-1 m-0 p-0" />
+        </div>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded align-self-start !important">
+          Create New List
+        </button>
+      </form>
 
       {lists.length === 0 ? (
         <p>You don't have any grocery lists yet. Create one to get started!</p>

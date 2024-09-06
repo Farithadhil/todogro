@@ -1,9 +1,5 @@
-// components/CategorySelect.js
 import { useState } from 'react';
-
-const categories = [
-  'Produce', 'Dairy', 'Meat', 'Bakery', 'Pantry', 'Frozen', 'Beverages', 'Household', 'Other'
-];
+import { categories } from './categories'; // Import the centralized categories
 
 export default function CategorySelect({ onSelect }) {
   const [category, setCategory] = useState('');
@@ -21,7 +17,9 @@ export default function CategorySelect({ onSelect }) {
     >
       <option value="">Select a category</option>
       {categories.map(cat => (
-        <option key={cat} value={cat}>{cat}</option>
+        <option key={cat.name} value={cat.name}>
+          {cat.icon} {cat.name} 
+        </option>
       ))}
     </select>
   );
